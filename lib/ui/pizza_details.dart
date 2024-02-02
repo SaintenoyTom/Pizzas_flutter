@@ -30,7 +30,7 @@ class _PizzaDetailsState extends State<PizzaDetails> {
             'Pizza ${widget._pizza.title}',
             style: PizzeriaStyle.pageTitleTextStyle,
           ),
-          Image.asset(
+          Image.network(
             'assets/images/pizzas/${widget._pizza.image}',
             height: 180,
           ),
@@ -115,6 +115,9 @@ class _PizzaDetailsState extends State<PizzaDetails> {
         ),
     ).toList();
   }
+
+
+
 }
 
 

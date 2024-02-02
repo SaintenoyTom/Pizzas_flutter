@@ -11,9 +11,10 @@ class PizzeriaService {
 
     try {
       final response = await http
-          .get(Uri.parse('${uri}/pizzas'));
+          .get(Uri.parse('${uri}/pizzas/index.php'));
 
        if (response.statusCode == 200){
+         print(response.body);
          var json = jsonDecode(utf8.decode(response.bodyBytes));
          for (final value in json){
            list.add(Pizza.fromJson(value));

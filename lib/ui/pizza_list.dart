@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:pizzeria/models/pizza.dart';
-import 'package:pizzeria/models/pizza_data.dart';
+import 'package:pizzeria/services/pizzeria_service.dart';
 import 'package:pizzeria/ui/pizza_details.dart';
 import 'package:pizzeria/ui/share/appbar_widget.dart';
 import 'package:pizzeria/ui/share/buy_button_widget.dart';
+import 'package:pizzeria/ui/share/pizzeria_style.dart';
 
 import '../models/cart.dart';
 
@@ -16,23 +17,45 @@ class PizzaList extends StatefulWidget {
 }
 
 class _PizzaListState extends State<PizzaList> {
-  List<Pizza> _pizzas = [];
+  late Future<List<Pizza>> _pizzas;
+  PizzeriaService _service = PizzeriaService();
 
   @override
   void initState() {
-    _pizzas = PizzaData.buildList();
+    _pizzas = _service.fetchPizzas();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBarWidget('Nos Pizzas', widget._cart),
-        body: ListView.builder(
-            padding: const EdgeInsets.all(8.0),
-            itemCount: _pizzas.length,
-            itemBuilder: (context, index) {
-              return _buildRow(_pizzas[index]);
-            }));
+        body: FutureBuilder<List<Pizza>> (
+          future: _pizzas,
+            builder: (context, snapshot){
+              if (snapshot.hasData){
+                return _buildListView(snapshot.data!);
+              }else if (snapshot.hasError){
+                return Center(
+                  child: Text(
+                    'Impossible de récupérer les données : ${snapshot.error}',
+                    style: PizzeriaStyle.headerTextStyle,
+                ),
+              );
+            }
+            return Center(child: CircularProgressIndicator());
+    } ,
+    ),
+    );
+  }
+
+  _buildListView(List<Pizza> pizzas){
+    return ListView.builder(
+      padding: const EdgeInsets.all(8.0),
+      itemCount: pizzas.length,
+      itemBuilder: (context, index){
+        return _buildRow(pizzas[index]);
+      },
+    );
   }
 
   _buildRow(Pizza pizza) {
